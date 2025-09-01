@@ -1,21 +1,50 @@
 package ru.yandex.practicum.telemetry.collector.configuration;
 
 import lombok.Getter;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.springframework.context.annotation.Configuration;
-import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Properties;
 
-@Configuration
 @Getter
+@Setter
+@ConfigurationProperties("collector.kafka")
 public class KafkaConfig {
-    private final Properties producerProperties = new Properties();
+    private ProducerConfig producer;
 
-    public Properties getProducerProperties() {
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
-        return producerProperties;
+    @Getter
+    @Setter
+    public static class ProducerConfig {
+        private final Properties properties;
+        private final EnumMap<TopicType, String> topics = new EnumMap<>(TopicType.class);
+
+        public ProducerConfig(Properties properties, Map<String, String> topics) {
+            this.properties = properties;
+            for (Map.Entry<String, String> entry : topics.entrySet()) {
+                this.topics.put(TopicType.from(entry.getKey()), entry.getValue());
+            }
+        }
+    }
+
+    public enum TopicType {
+        SENSOR_EVENTS("sensors-events"),
+        HUB_EVENTS("hubs-events");
+
+        private final String topicName;
+
+        TopicType(String topicName) {
+            this.topicName = topicName;
+        }
+
+        public static TopicType from(String type) {
+            for (TopicType value : values()) {
+                if (value.topicName.equalsIgnoreCase(type)) {
+                    return value;
+                }
+            }
+            throw new IllegalArgumentException("Unknown topic type: " + type);
+        }
     }
 }
