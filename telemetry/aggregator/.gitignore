@@ -3,6 +3,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.class
+*.jar
 
 ### STS ###
 .apt_generated
@@ -31,3 +33,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.DS_Store
+*.log
+
+# keep wrapper scripts and properties
+!mvnw
+!mvnw.cmd
+!/.mvn/wrapper/maven-wrapper.properties
+
+# ignore the jar only if you want it to be downloaded automatically
+/.mvn/wrapper/maven-wrapper.jar
+
