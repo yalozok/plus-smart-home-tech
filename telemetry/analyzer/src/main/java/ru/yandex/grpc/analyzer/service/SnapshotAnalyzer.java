@@ -1,5 +1,6 @@
 package ru.yandex.grpc.analyzer.service;
 
+import com.google.protobuf.Timestamp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.grpc.analyzer.dal.entity.Action;
@@ -17,7 +18,6 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
 import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
-import ru.yandex.practicum.telemetry.collector.util.ProtoTimeUtil;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -116,11 +116,16 @@ public class SnapshotAnalyzer {
                 .setValue(action.getValue())
                 .build();
 
+        com.google.protobuf.Timestamp timestampProto = Timestamp.newBuilder()
+                .setSeconds(timestamp.getEpochSecond())
+                .setNanos(timestamp.getNano())
+                .build();
+
         return DeviceActionRequest.newBuilder()
                 .setHubId(scenario.getHubId())
                 .setScenarioName(scenario.getName())
                 .setAction(actionProto)
-                .setTimestamp(ProtoTimeUtil.toProtoTimestamp(timestamp))
+                .setTimestamp(timestampProto)
                 .build();
     }
 
