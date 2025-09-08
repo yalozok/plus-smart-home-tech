@@ -8,24 +8,26 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.yandex.grpc.analyzer.configuration.KafkaConfig;
+import ru.yandex.grpc.analyzer.configuration.TopicType;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
 public class HubEventProcessor implements Runnable {
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
     private final HubEventService hubEventService;
-    private final String topic;
+    private final Map<TopicType, String> topics;
 
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
     public HubEventProcessor(KafkaConfig config, HubEventService hubEventService) {
         this.consumer = new KafkaConsumer<>(config.getHubConsumer().getProperties());
         this.hubEventService = hubEventService;
-        this.topic = config.getTopic(KafkaConfig.TopicType.HUB_EVENTS);
+        this.topics = config.getTopics();
     }
 
     @Override
@@ -36,7 +38,7 @@ public class HubEventProcessor implements Runnable {
             consumer.wakeup();
         }));
         try {
-            consumer.subscribe(List.of(topic));
+            consumer.subscribe(List.of(topics.get(TopicType.HUB_EVENTS)));
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
