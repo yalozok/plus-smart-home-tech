@@ -5,6 +5,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.telemetry.collector.configuration.KafkaConfig;
+import ru.yandex.practicum.telemetry.collector.configuration.TopicType;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.SensorEventHandler;
 import ru.yandex.practicum.telemetry.collector.util.ProtoTimeUtil;
@@ -31,7 +32,7 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> imple
                 .build();
 
         producer.send(eventAvro, event.getHubId(),
-                ProtoTimeUtil.toInstant(event.getTimestamp()), KafkaConfig.TopicType.SENSOR_EVENTS);
+                ProtoTimeUtil.toInstant(event.getTimestamp()), TopicType.SENSOR_EVENTS);
     }
 
 }

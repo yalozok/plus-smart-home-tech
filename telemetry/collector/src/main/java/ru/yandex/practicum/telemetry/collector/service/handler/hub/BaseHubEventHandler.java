@@ -5,6 +5,7 @@ import org.apache.avro.specific.SpecificRecordBase;
 import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.collector.configuration.KafkaConfig;
+import ru.yandex.practicum.telemetry.collector.configuration.TopicType;
 import ru.yandex.practicum.telemetry.collector.service.KafkaEventProducer;
 import ru.yandex.practicum.telemetry.collector.service.handler.HubEventHandler;
 import ru.yandex.practicum.telemetry.collector.util.ProtoTimeUtil;
@@ -30,6 +31,6 @@ public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implemen
                 .build();
 
         producer.send(eventAvro, event.getHubId(),
-                ProtoTimeUtil.toInstant(event.getTimestamp()), KafkaConfig.TopicType.HUB_EVENTS);
+                ProtoTimeUtil.toInstant(event.getTimestamp()), TopicType.HUB_EVENTS);
     }
 }
