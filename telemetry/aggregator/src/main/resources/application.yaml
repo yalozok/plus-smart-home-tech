@@ -14,6 +14,8 @@ aggregator:
         "max.poll.records": 100
         "fetch.max.bytes": 3072000
         "max.partition.fetch.bytes": 3072000
+      topics:
+        SENSOR_EVENTS: telemetry.sensors.v1
 
     producer:
       properties:
@@ -21,6 +23,5 @@ aggregator:
         "key.serializer": org.apache.kafka.common.serialization.StringSerializer
         "value.serializer": ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
 
-    topics:
-      sensors-events: telemetry.sensors.v1
-      snapshots-events: telemetry.snapshots.v1
+      topics:
+        SNAPSHOT_EVENTS: telemetry.snapshots.v1
