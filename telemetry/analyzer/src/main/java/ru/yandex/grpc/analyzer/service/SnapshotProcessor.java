@@ -10,6 +10,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.yandex.grpc.analyzer.configuration.KafkaConfig;
+import ru.yandex.grpc.analyzer.configuration.TopicType;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SnapshotProcessor {
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
     private final SnapshotService snapshotService;
-    private final String topic;
+    private final Map<TopicType, String> topics;
 
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new ConcurrentHashMap<>();
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
@@ -31,7 +32,7 @@ public class SnapshotProcessor {
     public SnapshotProcessor(KafkaConfig config, SnapshotService snapshotService) {
         this.consumer = new KafkaConsumer<>(config.getSnapshotConsumer().getProperties());
         this.snapshotService = snapshotService;
-        this.topic = config.getTopic(KafkaConfig.TopicType.SNAPSHOT_EVENTS);
+        this.topics = config.getTopics();
     }
 
     public void start() {
@@ -40,7 +41,7 @@ public class SnapshotProcessor {
             consumer.wakeup();
         }));
         try {
-            consumer.subscribe(List.of(topic));
+            consumer.subscribe(List.of(topics.get(TopicType.SNAPSHOT_EVENTS)));
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {

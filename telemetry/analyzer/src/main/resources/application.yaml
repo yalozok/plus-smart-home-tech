@@ -75,5 +75,5 @@ analyzer:
 
 
     topics:
-      hub-events: telemetry.hubs.v1
-      snapshots-events: telemetry.snapshots.v1
+      HUB_EVENTS: telemetry.hubs.v1
+      SNAPSHOT_EVENTS: telemetry.snapshots.v1

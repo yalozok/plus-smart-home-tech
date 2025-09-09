@@ -1,8 +1,9 @@
 package ru.yandex.grpc.analyzer.dal.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,13 +26,13 @@ public class Condition {
     private long id;
 
     @Column(name = "type")
-    @Convert(converter = ConditionTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private ConditionType type;
 
     @Column(name = "value")
     private int value;
 
     @Column(name = "operation")
-    @Convert(converter = ConditionOperationConverter.class)
+    @Enumerated(EnumType.STRING)
     private ConditionOperation operation;
 }

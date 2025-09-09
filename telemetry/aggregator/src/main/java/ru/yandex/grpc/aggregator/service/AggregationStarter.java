@@ -11,13 +11,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
-import ru.yandex.grpc.aggregator.configuration.KafkaConfig;
+import ru.yandex.grpc.aggregator.configuration.KafkaConsumerConfig;
+import ru.yandex.grpc.aggregator.configuration.KafkaProducerConfig;
+import ru.yandex.grpc.aggregator.configuration.TopicType;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,21 +26,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Slf4j
 public class AggregationStarter {
-    private final SnapshotServiceImpl snapshotService = new SnapshotServiceImpl();
+    private final SnapshotServiceImpl snapshotService;
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new ConcurrentHashMap<>();
-    private final EnumMap<KafkaConfig.TopicType, String> topics = new EnumMap<>(KafkaConfig.TopicType.class);
+    private final Map<TopicType, String> consumerTopics;
+    private final Map<TopicType, String> producerTopics;
 
     private final KafkaConsumer<String, SpecificRecordBase> consumer;
     private final KafkaProducer<String, SpecificRecordBase> producer;
 
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
-    public AggregationStarter(KafkaConfig config) {
-        this.consumer = new KafkaConsumer<>(config.getConsumer().getProperties());
-        this.producer = new KafkaProducer<>(config.getProducer().getProperties());
-        for (KafkaConfig.TopicType type : KafkaConfig.TopicType.values()) {
-            topics.put(type, config.getTopic(type));
-        }
+    public AggregationStarter(SnapshotServiceImpl snapshotService,
+                              KafkaConsumerConfig consumerConfig, KafkaProducerConfig producerConfig) {
+        this.snapshotService = snapshotService;
+        this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
+        this.consumerTopics = consumerConfig.getTopics();
+
+        this.producer = new KafkaProducer<>(producerConfig.getProperties());
+        this.producerTopics = producerConfig.getTopics();
     }
 
     public void start() {
@@ -50,7 +53,7 @@ public class AggregationStarter {
         }));
 
         try {
-            consumer.subscribe(List.of(topics.get(KafkaConfig.TopicType.SENSOR_EVENTS)));
+            consumer.subscribe(List.of(consumerTopics.get(TopicType.SENSOR_EVENTS)));
 
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(CONSUME_ATTEMPT_TIMEOUT);
@@ -63,14 +66,6 @@ public class AggregationStarter {
                     TopicPartition tp = new TopicPartition(record.topic(), record.partition());
                     currentOffsets.put(tp, new OffsetAndMetadata(record.offset() + 1));
                 }
-
-                if (!currentOffsets.isEmpty()) {
-                    consumer.commitAsync(new HashMap<>(currentOffsets), (offsets, exception) -> {
-                        if (exception != null) {
-                            log.warn("Failed to commit offsets: {}", offsets, exception);
-                        }
-                    });
-                }
             }
         } catch (WakeupException e) {
             log.info("Consumer shutdown detected.");
@@ -80,7 +75,12 @@ public class AggregationStarter {
             try {
                 producer.flush();
                 if (!currentOffsets.isEmpty()) {
-                    consumer.commitSync(currentOffsets);
+                    try {
+                        consumer.commitSync(currentOffsets);
+                        log.info("Final offset commit successful: {}", currentOffsets);
+                    } catch (Exception e) {
+                        log.error("Failed to commit offsets during shutdown: {}", currentOffsets, e);
+                    }
                 }
             } finally {
                 log.info("Closing consumer and producer");
@@ -100,7 +100,7 @@ public class AggregationStarter {
     }
 
     private void sendSnapshot(SensorsSnapshotAvro snapshot) {
-        String topic = topics.get(KafkaConfig.TopicType.SNAPSHOT_EVENTS);
+        String topic = producerTopics.get(TopicType.SNAPSHOT_EVENTS);
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, snapshot);
 
         producer.send(record, (metadata, exception) -> {
