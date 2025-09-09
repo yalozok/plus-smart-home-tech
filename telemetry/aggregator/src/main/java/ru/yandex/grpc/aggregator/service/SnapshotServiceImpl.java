@@ -24,7 +24,6 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .setTimestamp(event.getTimestamp())
                 .setData(event.getPayload())
                 .build();
-        ;
 
         if (existingSnapshot == null) {
             newStateMap = new HashMap<>();
