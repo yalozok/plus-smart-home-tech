@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Slf4j
 public class AggregationStarter {
-    private final SnapshotServiceImpl snapshotService = new SnapshotServiceImpl();
+    private final SnapshotServiceImpl snapshotService;
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new ConcurrentHashMap<>();
     private final Map<TopicType, String> consumerTopics;
     private final Map<TopicType, String> producerTopics;
@@ -37,7 +37,9 @@ public class AggregationStarter {
 
     private static final Duration CONSUME_ATTEMPT_TIMEOUT = Duration.ofMillis(1000);
 
-    public AggregationStarter(KafkaConsumerConfig consumerConfig, KafkaProducerConfig producerConfig) {
+    public AggregationStarter(SnapshotServiceImpl snapshotService,
+                              KafkaConsumerConfig consumerConfig, KafkaProducerConfig producerConfig) {
+        this.snapshotService = snapshotService;
         this.consumer = new KafkaConsumer<>(consumerConfig.getProperties());
         this.consumerTopics = consumerConfig.getTopics();
 
