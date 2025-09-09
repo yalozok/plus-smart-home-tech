@@ -18,7 +18,6 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,14 +66,6 @@ public class AggregationStarter {
                     TopicPartition tp = new TopicPartition(record.topic(), record.partition());
                     currentOffsets.put(tp, new OffsetAndMetadata(record.offset() + 1));
                 }
-
-                if (!currentOffsets.isEmpty()) {
-                    consumer.commitAsync(new HashMap<>(currentOffsets), (offsets, exception) -> {
-                        if (exception != null) {
-                            log.warn("Failed to commit offsets: {}", offsets, exception);
-                        }
-                    });
-                }
             }
         } catch (WakeupException e) {
             log.info("Consumer shutdown detected.");
@@ -84,7 +75,12 @@ public class AggregationStarter {
             try {
                 producer.flush();
                 if (!currentOffsets.isEmpty()) {
-                    consumer.commitSync(currentOffsets);
+                    try {
+                        consumer.commitSync(currentOffsets);
+                        log.info("Final offset commit successful: {}", currentOffsets);
+                    } catch (Exception e) {
+                        log.error("Failed to commit offsets during shutdown: {}", currentOffsets, e);
+                    }
                 }
             } finally {
                 log.info("Closing consumer and producer");
