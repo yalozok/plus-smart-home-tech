@@ -44,7 +44,7 @@ public class ScenarioService {
         scenario.getConditions().forEach(condition -> allSensorIds.add(condition.getSensorId()));
         scenario.getActions().forEach(action -> allSensorIds.add(action.getSensorId()));
 
-        if(!sensorRepository.existsByIdInAndHubId(allSensorIds, hubId)) {
+        if (!sensorRepository.existsByIdInAndHubId(allSensorIds, hubId)) {
             log.warn("Some sensors not found in hub '{}': {}", hubId, allSensorIds);
             return;
         }
@@ -111,7 +111,6 @@ public class ScenarioService {
         scenario.getConditions().clear();
         scenario.getActions().clear();
         scenarioRepository.save(scenario);
-        scenarioRepository.deleteById(scenario.getId());
 
         if (!conditionIds.isEmpty()) {
             conditionRepository.deleteAllById(conditionIds);
@@ -120,6 +119,7 @@ public class ScenarioService {
         if (!actionIds.isEmpty()) {
             actionRepository.deleteAllById(actionIds);
         }
+        scenarioRepository.deleteById(scenario.getId());
     }
 
 
