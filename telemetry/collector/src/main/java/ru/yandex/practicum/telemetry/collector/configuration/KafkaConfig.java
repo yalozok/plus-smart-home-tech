@@ -1,21 +1,22 @@
 package ru.yandex.practicum.telemetry.collector.configuration;
 
 import lombok.Getter;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.springframework.context.annotation.Configuration;
-import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Map;
 import java.util.Properties;
 
-@Configuration
 @Getter
+@Setter
+@ConfigurationProperties("collector.kafka")
 public class KafkaConfig {
-    private final Properties producerProperties = new Properties();
+    private ProducerConfig producer;
+    private Map<TopicType, String> topics;
 
-    public Properties getProducerProperties() {
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
-        return producerProperties;
+    @Getter
+    @Setter
+    public static class ProducerConfig {
+        private Properties properties;
     }
 }
