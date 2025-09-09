@@ -19,8 +19,10 @@ import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioConditionAvro;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,15 @@ public class ScenarioService {
             return;
         }
 
+        Set<String> allSensorIds = new HashSet<>();
+        scenario.getConditions().forEach(condition -> allSensorIds.add(condition.getSensorId()));
+        scenario.getActions().forEach(action -> allSensorIds.add(action.getSensorId()));
+
+        if(!sensorRepository.existsByIdInAndHubId(allSensorIds, hubId)) {
+            log.warn("Some sensors not found in hub '{}': {}", hubId, allSensorIds);
+            return;
+        }
+
         Scenario scenarioEntity = new Scenario();
         scenarioEntity.setName(scenario.getName());
         scenarioEntity.setHubId(hubId);
@@ -46,10 +57,6 @@ public class ScenarioService {
         List<ScenarioConditionAvro> conditionsAvro = scenario.getConditions();
         for (ScenarioConditionAvro conditionAvro : conditionsAvro) {
             String sensorId = conditionAvro.getSensorId();
-            if (!sensorRepository.existsById(sensorId)) {
-                log.warn("Sensor with id '{}' not found in hub '{}'", sensorId, hubId);
-                return;
-            }
             Condition condition = new Condition();
             condition.setType(ConditionType.valueOf(conditionAvro.getType().name()));
             condition.setOperation(ConditionOperation.valueOf(conditionAvro.getOperation().name()));
@@ -72,10 +79,6 @@ public class ScenarioService {
         List<DeviceActionAvro> actionsAvro = scenario.getActions();
         for (DeviceActionAvro actionAvro : actionsAvro) {
             String sensorId = actionAvro.getSensorId();
-            if (!sensorRepository.existsById(sensorId)) {
-                log.warn("Sensor with id '{}' not found in hub '{}'", sensorId, hubId);
-                return;
-            }
             Action action = new Action();
             action.setType(ActionType.valueOf(actionAvro.getType().name()));
             if (actionAvro.getValue() != null) {
