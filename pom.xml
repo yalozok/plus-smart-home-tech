@@ -32,7 +32,7 @@
         <grpc.version>1.63.0</grpc.version>
         <lombok.version>1.18.38</lombok.version>
         <postgresql.version>42.7.7</postgresql.version>
-        <h2.version>2.2.224</h2.version>
+        <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
 
         <!--       Plugins       -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
@@ -73,9 +73,11 @@
             </dependency>
 
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!--    GRPC dependencies management        -->
