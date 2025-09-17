@@ -21,3 +21,8 @@ aggregator:
 
       topics:
         SNAPSHOT_EVENTS: telemetry.snapshots.v1
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
