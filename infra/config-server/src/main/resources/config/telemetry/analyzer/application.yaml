@@ -74,8 +74,3 @@ analyzer:
     topics:
       HUB_EVENTS: telemetry.hubs.v1
       SNAPSHOT_EVENTS: telemetry.snapshots.v1
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
