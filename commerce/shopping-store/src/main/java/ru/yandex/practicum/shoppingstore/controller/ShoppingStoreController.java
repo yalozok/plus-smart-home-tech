@@ -21,6 +21,7 @@ import ru.yandex.practicum.commerce.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.commerce.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.commerce.dto.shopping.store.QuantityState;
 import ru.yandex.practicum.commerce.request.shopping.store.SetProductQuantityStateRequest;
+import ru.yandex.practicum.logging.Loggable;
 import ru.yandex.practicum.shoppingstore.dal.PageableMapper;
 import ru.yandex.practicum.shoppingstore.service.ShoppingStoreService;
 
@@ -37,57 +38,50 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
     @Override
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Loggable
     public Page<ProductDto> getProducts(@RequestParam ProductCategory category,
                                         @RequestParam(required = false, defaultValue = "0") int page,
                                         @RequestParam(required = false, defaultValue = "10") int size,
                                         @RequestParam(required = false) String[] sort) {
-        log.info("==> getProducts: category={}, page={}, size={}, sort={}", category, page, size, sort);
-
         PageableDto pageableDto = new PageableDto();
         pageableDto.setPage(page);
         pageableDto.setSize(size);
         pageableDto.setSort(sort != null ? sort : new String[]{"productName", "ASC"});
 
-        Page<ProductDto> products = service.getProducts(category, pageableMapper.toSpringPageable(pageableDto));
-        log.info("<== getProducts: products.size={}", products.getSize());
-        return products;
+        return service.getProducts(category, pageableMapper.toSpringPageable(pageableDto));
     }
 
     @Override
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Loggable
     public ProductDto addProduct(@RequestBody ProductDto productDto) {
-        log.info("==> addProduct: product={}", productDto);
-        ProductDto savedProduct = service.addProduct(productDto);
-        log.info("<== addProduct: savedProduct={}", savedProduct);
-        return savedProduct;
+        return service.addProduct(productDto);
     }
 
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @Loggable
     public ProductDto updateProduct(@RequestBody ProductDto product) throws ProductNotFoundException {
-        log.info("==> updateProduct: product={}", product);
-        ProductDto updatedProduct = service.updateProduct(product);
-        log.info("<== updateProduct: updatedProduct={}", updatedProduct);
-        return updatedProduct;
+        return service.updateProduct(product);
     }
 
     @Override
     @PostMapping("/removeProductFromStore")
     @ResponseStatus(HttpStatus.OK)
+    @Loggable
     public boolean deleteProduct(@RequestBody UUID productId) throws ProductNotFoundException {
-        log.info("==> deleteProduct: productId={}", productId);
         return service.deleteProduct(productId);
     }
 
     @Override
     @PostMapping("/quantityState")
     @ResponseStatus(HttpStatus.OK)
+    @Loggable
     public boolean setProductQuantityState(@RequestParam @NotNull UUID productId,
                                            @RequestParam @NotNull QuantityState quantityState)
             throws ProductNotFoundException {
-        log.info("==> setProductQuantityState: productId={}, quantityState={}", productId, quantityState);
         SetProductQuantityStateRequest newQuantity = new SetProductQuantityStateRequest();
         newQuantity.setProductId(productId);
         newQuantity.setQuantityState(quantityState);
@@ -97,10 +91,8 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
     @Override
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
+    @Loggable
     public ProductDto getProduct(@PathVariable UUID productId) throws ProductNotFoundException {
-        log.info("==> getProduct: productId={}", productId);
-        ProductDto product = service.getProduct(productId);
-        log.info("<== getProduct: product={}", product);
-        return product;
+        return service.getProduct(productId);
     }
 }
