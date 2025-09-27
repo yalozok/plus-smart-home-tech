@@ -2,20 +2,19 @@ package ru.yandex.practicum.shoppingstore.client;
 
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import ru.yandex.practicum.commerce.contract.shopping.store.exception.ProductNotFoundException;
+import ru.yandex.practicum.logging.Loggable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-@Slf4j
 public class CustomErrorDecoder implements ErrorDecoder {
     private final ErrorDecoder defaultDecoder = new Default();
 
     @Override
+    @Loggable
     public Exception decode(String methodKey, Response response) {
-        log.error("Error response received: {}", response);
         if (response.status() == 404) {
             String message = extractMessage(response);
             return new ProductNotFoundException(message);
