@@ -42,3 +42,12 @@ services:
       POSTGRES_PASSWORD: analyzer
     ports:
       - "5432:5432"
+
+  shopping-store-db:
+    image: postgres:16.1
+    environment:
+      POSTGRES_DB: shopping-store
+      POSTGRES_USER: shopping-store
+      POSTGRES_PASSWORD: shopping-store
+    ports:
+      - "5433:5432"
