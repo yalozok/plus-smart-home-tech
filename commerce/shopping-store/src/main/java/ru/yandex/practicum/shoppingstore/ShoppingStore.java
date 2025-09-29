@@ -9,7 +9,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
         "ru.yandex.practicum.shoppingstore",
         "ru.yandex.practicum.logging"
 })
-@EnableFeignClients
+@EnableFeignClients(basePackages = {
+        "ru.yandex.practicum.commerce.client"
+})
 @EnableAspectJAutoProxy
 public class ShoppingStore {
     public static void main(String[] args) {

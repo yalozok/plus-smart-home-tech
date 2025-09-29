@@ -1,4 +1,4 @@
-package ru.yandex.practicum.shoppingstore.client;
+package ru.yandex.practicum.commerce.client.shopping.store;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import ru.yandex.practicum.commerce.contract.shopping.store.ShoppingStoreOperation;

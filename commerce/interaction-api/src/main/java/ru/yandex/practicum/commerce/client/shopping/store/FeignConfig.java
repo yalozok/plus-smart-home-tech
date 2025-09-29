@@ -1,4 +1,4 @@
-package ru.yandex.practicum.shoppingstore.client;
+package ru.yandex.practicum.commerce.client.shopping.store;
 
 import feign.Feign;
 import feign.Logger;
