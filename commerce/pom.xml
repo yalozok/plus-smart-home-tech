@@ -16,6 +16,8 @@
         <module>interaction-api</module>
         <module>shopping-store</module>
         <module>logging</module>
+        <module>shopping-cart</module>
+        <module>warehouse</module>
     </modules>
 
 </project>
