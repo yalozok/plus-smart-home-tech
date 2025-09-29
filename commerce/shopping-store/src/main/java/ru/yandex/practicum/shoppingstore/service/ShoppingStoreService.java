@@ -14,7 +14,6 @@ import ru.yandex.practicum.shoppingstore.dal.Product;
 import ru.yandex.practicum.shoppingstore.dal.ProductMapper;
 import ru.yandex.practicum.shoppingstore.dal.ShoppingStoreRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
