@@ -6,11 +6,11 @@ import lombok.Data;
 @Data
 public class BookedProductsDto {
     @NotNull
-    private Double deliveryWeight;
+    private Double deliveryWeight = 0.0;
 
     @NotNull
-    private Double deliveryVolume;
+    private Double deliveryVolume = 0.0;
 
     @NotNull
-    private Boolean fragile;
+    private Boolean fragile = false;
 }

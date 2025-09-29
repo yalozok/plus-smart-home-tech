@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class NoSpecifiedProductInWarehouseException extends RuntimeException {
-    public NoSpecifiedProductInWarehouseException(UUID productId) {
-        super("Product " + productId + " is not in warehouse");
+    public NoSpecifiedProductInWarehouseException(String message) {
+        super(message);
     }
 }
