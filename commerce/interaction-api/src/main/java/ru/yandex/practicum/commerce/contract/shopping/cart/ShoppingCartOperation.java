@@ -21,11 +21,11 @@ import java.util.UUID;
 
 public interface ShoppingCartOperation {
     @GetMapping
-    ShoppingCartDto getShoppingCart(@RequestParam @NotEmpty String username) throws NotAuthorizedUserException;
+    ShoppingCartDto getOrCreateShoppingCart(@RequestParam @NotEmpty String username) throws NotAuthorizedUserException;
 
     @PutMapping
     ShoppingCartDto addProductToShoppingCart(
-            @RequestParam String username,
+            @RequestParam @NotEmpty String username,
             @RequestBody @Valid @NotNull Map<@NotNull UUID, @NotNull @Positive Long> products
     ) throws NotAuthorizedUserException;
 
@@ -41,6 +41,6 @@ public interface ShoppingCartOperation {
     @PostMapping("/change-quantity")
     ShoppingCartDto changeProductQuantityInShoppingCart(
             @RequestParam @NotEmpty String username,
-            @RequestBody @Valid @NotNull ChangeProductQuantityRequest product
+            @RequestBody @Valid @NotNull ChangeProductQuantityRequest productQuantity
     ) throws NotAuthorizedUserException, NoProductsInShoppingCartException;
 }
