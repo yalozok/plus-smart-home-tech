@@ -1,0 +1,94 @@
+package ru.yandex.practicum.shoppingcart.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.commerce.client.warehouse.WareHouseClient;
+import ru.yandex.practicum.commerce.contract.shopping.cart.exception.NoProductsInShoppingCartException;
+import ru.yandex.practicum.commerce.contract.shopping.cart.exception.NotAuthorizedUserException;
+import ru.yandex.practicum.commerce.dto.shopping.cart.ShoppingCartDto;
+import ru.yandex.practicum.commerce.request.shopping.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.shoppingcart.dal.ShoppingCart;
+import ru.yandex.practicum.shoppingcart.dal.ShoppingCartMapper;
+import ru.yandex.practicum.shoppingcart.dal.ShoppingCartRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class ShoppingCartService {
+    private final ShoppingCartRepository repository;
+    private final ShoppingCartMapper mapper;
+    private final WareHouseClient warehouseClient;
+
+
+    public ShoppingCartDto getOrCreateShoppingCart(String username) {
+        return repository.findByUsernameAndActiveTrue(username)
+                .map(mapper::toDto)
+                .orElseGet(() -> {
+                    ShoppingCart cart = new ShoppingCart();
+                    cart.setUsername(username);
+                    cart.setActive(true);
+                    cart.setCreatedAt(LocalDateTime.now());
+                    return mapper.toDto(repository.save(cart));
+                });
+    }
+
+    @Transactional
+    public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
+        ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
+                .orElseGet(() -> {
+                    ShoppingCart newCart = new ShoppingCart();
+                    newCart.setUsername(username);
+                    newCart.setActive(true);
+                    newCart.setCreatedAt(LocalDateTime.now());
+                    return repository.save(newCart);
+                });
+
+        ShoppingCart proposedCart = new ShoppingCart();
+        proposedCart.setId(cart.getId());
+        proposedCart.setProducts(products);
+        warehouseClient.checkBookedProducts(mapper.toDto(proposedCart));
+
+        cart.setProducts(products);
+        return mapper.toDto(repository.save(cart));
+    }
+
+    @Transactional
+    public void deleteShoppingCart(String username) {
+        ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
+                .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
+        cart.setActive(false);
+        repository.save(cart);
+    }
+
+    @Transactional
+    public ShoppingCartDto removeProductFromShoppingCart(String username, List<UUID> productIds) {
+        ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
+                .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
+        List<UUID> notFoundProducts = productIds.stream()
+                .filter(id -> !cart.getProducts().containsKey(id))
+                .toList();
+        if (!notFoundProducts.isEmpty()) {
+            throw new NoProductsInShoppingCartException("Products " + notFoundProducts + " not found in cart");
+        }
+
+        productIds.forEach((id) -> cart.getProducts().remove(id));
+        return mapper.toDto(repository.save(cart));
+    }
+
+    @Transactional
+    public ShoppingCartDto changeProductQuantityInShoppingCart(String username, ChangeProductQuantityRequest productQuantity) {
+        ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
+                .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
+        if (!cart.getProducts().containsKey(productQuantity.getProductId())) {
+            throw new NoProductsInShoppingCartException("Product " + productQuantity.getProductId() + " not found in cart");
+        }
+        cart.getProducts().put(productQuantity.getProductId(), productQuantity.getNewQuantity());
+        return mapper.toDto(repository.save(cart));
+    }
+}
