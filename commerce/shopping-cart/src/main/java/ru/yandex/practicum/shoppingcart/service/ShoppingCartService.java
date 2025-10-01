@@ -27,28 +27,13 @@ public class ShoppingCartService {
 
 
     public ShoppingCartDto getOrCreateShoppingCart(String username) {
-        return repository.findByUsernameAndActiveTrue(username)
-                .map(mapper::toDto)
-                .orElseGet(() -> {
-                    ShoppingCart cart = new ShoppingCart();
-                    cart.setUsername(username);
-                    cart.setActive(true);
-                    cart.setCreatedAt(LocalDateTime.now());
-                    return mapper.toDto(repository.save(cart));
-                });
+        ShoppingCart cart = findShoppingCartByUseOrCreateNewOne(username);
+        return mapper.toDto(cart);
     }
 
     @Transactional
     public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
-        ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
-                .orElseGet(() -> {
-                    ShoppingCart newCart = new ShoppingCart();
-                    newCart.setUsername(username);
-                    newCart.setActive(true);
-                    newCart.setCreatedAt(LocalDateTime.now());
-                    return repository.save(newCart);
-                });
-
+        ShoppingCart cart = findShoppingCartByUseOrCreateNewOne(username);
         ShoppingCart proposedCart = new ShoppingCart();
         proposedCart.setId(cart.getId());
         proposedCart.setProducts(products);
@@ -56,6 +41,17 @@ public class ShoppingCartService {
 
         cart.setProducts(products);
         return mapper.toDto(repository.save(cart));
+    }
+
+    private ShoppingCart findShoppingCartByUseOrCreateNewOne(String username) {
+        return repository.findByUsernameAndActiveTrue(username)
+                .orElseGet(() -> {
+                    ShoppingCart newCart = new ShoppingCart();
+                    newCart.setUsername(username);
+                    newCart.setActive(true);
+                    newCart.setCreatedAt(LocalDateTime.now());
+                    return repository.save(newCart);
+                });
     }
 
     @Transactional
