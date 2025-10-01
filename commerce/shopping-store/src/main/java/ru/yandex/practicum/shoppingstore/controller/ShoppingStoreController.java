@@ -35,7 +35,6 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
 
     @Override
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     @Loggable
     public Page<ProductDto> getProducts(@RequestParam ProductCategory category,
                                         @RequestParam(required = false, defaultValue = "0") int page,
@@ -59,7 +58,6 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
 
     @Override
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
     @Loggable
     public ProductDto updateProduct(@RequestBody ProductDto product) throws ProductNotFoundException {
         return service.updateProduct(product);
@@ -67,7 +65,6 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
 
     @Override
     @PostMapping("/removeProductFromStore")
-    @ResponseStatus(HttpStatus.OK)
     @Loggable
     public boolean deleteProduct(@RequestBody UUID productId) throws ProductNotFoundException {
         return service.deleteProduct(productId);
@@ -75,7 +72,6 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
 
     @Override
     @PostMapping("/quantityState")
-    @ResponseStatus(HttpStatus.OK)
     @Loggable
     public boolean setProductQuantityState(@RequestParam @NotNull UUID productId,
                                            @RequestParam @NotNull QuantityState quantityState)
@@ -88,7 +84,6 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
 
     @Override
     @GetMapping("/{productId}")
-    @ResponseStatus(HttpStatus.OK)
     @Loggable
     public ProductDto getProduct(@PathVariable UUID productId) throws ProductNotFoundException {
         return service.getProduct(productId);
