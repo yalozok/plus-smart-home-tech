@@ -59,7 +59,7 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public void deleteShoppingCart(String username) {
+    public void deactivateShoppingCart(String username) {
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
                 .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
         cart.setActive(false);

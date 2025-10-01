@@ -50,7 +50,7 @@ public class ShoppingCartController implements ShoppingCartOperation {
     @Loggable
     @DeleteMapping
     public void deleteShoppingCart(@RequestParam @NotEmpty String username) {
-        service.deleteShoppingCart(username);
+        service.deactivateShoppingCart(username);
     }
 
     @Override
