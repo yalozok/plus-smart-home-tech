@@ -15,9 +15,12 @@ import ru.yandex.practicum.warehouse.WarehouseApp;
 import ru.yandex.practicum.warehouse.dal.WarehouseProduct;
 import ru.yandex.practicum.warehouse.dal.WarehouseProductRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -66,10 +69,23 @@ public class WarehouseService {
     @Transactional
     public BookedProductsDto checkedBookedProducts(ShoppingCartDto cart) {
         BookedProductsDto bookedProducts = new BookedProductsDto();
-        Map<UUID, Long> products = cart.getProducts();
-        List<WarehouseProduct> productsInWarehouse = warehouseProductRepository.findAllById(products.keySet());
+        Map<UUID, Long> requestedProducts = cart.getProducts();
+        List<WarehouseProduct> productsInWarehouse = warehouseProductRepository.findAllById(requestedProducts.keySet());
+
+        if(requestedProducts.size() != productsInWarehouse.size()) {
+            Set<UUID> foundIds = productsInWarehouse.stream()
+                    .map(WarehouseProduct::getProductId)
+                    .collect(Collectors.toSet());
+            Set<UUID> missingIds = new HashSet<>(requestedProducts.keySet());
+            missingIds.removeAll(foundIds);
+
+            throw new NoSpecifiedProductInWarehouseException(
+                    "Products not found in warehouse: " + missingIds
+            );
+        }
+
         productsInWarehouse.forEach(product -> {
-            long requestedQuantity = products.get(product.getProductId());
+            long requestedQuantity = requestedProducts.get(product.getProductId());
             if (product.getQuantity() < requestedQuantity) {
                 throw new ProductInShoppingCartLowQuantityInWarehouse("Product " + product.getProductId() + " not enough in warehouse");
             }

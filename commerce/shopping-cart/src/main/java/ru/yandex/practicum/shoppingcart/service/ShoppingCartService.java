@@ -13,6 +13,7 @@ import ru.yandex.practicum.shoppingcart.dal.ShoppingCartMapper;
 import ru.yandex.practicum.shoppingcart.dal.ShoppingCartRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,12 +35,15 @@ public class ShoppingCartService {
     @Transactional
     public ShoppingCartDto addProductToShoppingCart(String username, Map<UUID, Long> products) {
         ShoppingCart cart = findShoppingCartByUseOrCreateNewOne(username);
-        ShoppingCart proposedCart = new ShoppingCart();
-        proposedCart.setId(cart.getId());
-        proposedCart.setProducts(products);
-        warehouseClient.checkBookedProducts(mapper.toDto(proposedCart));
+        Map<UUID, Long> mergedProducts = new HashMap<>(cart.getProducts());
+        products.forEach((productId, productQuantity) ->
+                mergedProducts.merge(productId, productQuantity, Long::sum));
 
-        cart.setProducts(products);
+        ShoppingCartDto proposedCart = mapper.toDto(cart);
+        proposedCart.setProducts(mergedProducts);
+        warehouseClient.checkBookedProducts(proposedCart);
+
+        cart.setProducts(mergedProducts);
         return mapper.toDto(repository.save(cart));
     }
 
