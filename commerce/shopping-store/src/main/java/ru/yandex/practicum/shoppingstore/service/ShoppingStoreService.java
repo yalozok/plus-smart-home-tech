@@ -31,7 +31,8 @@ public class ShoppingStoreService {
     @Transactional
     public ProductDto addProduct(ProductDto productDto) {
         Product product = mapper.toEntity(productDto);
-        return mapper.toDto(repository.save(product));
+        Product savedProduct = repository.saveAndFlush(product);
+        return mapper.toDto(savedProduct);
     }
 
     @Transactional
