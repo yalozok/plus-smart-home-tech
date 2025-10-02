@@ -39,11 +39,8 @@ public class ShoppingCartService {
         products.forEach((productId, productQuantity) ->
                 mergedProducts.merge(productId, productQuantity, Long::sum));
 
-        ShoppingCartDto proposedCart = mapper.toDto(cart);
-        proposedCart.setProducts(mergedProducts);
-        warehouseClient.checkBookedProducts(proposedCart);
-
         cart.setProducts(mergedProducts);
+        validateCartAgainstWarehouse(cart);
         return mapper.toDto(repository.save(cart));
     }
 
@@ -70,13 +67,9 @@ public class ShoppingCartService {
     public ShoppingCartDto removeProductFromShoppingCart(String username, List<UUID> productIds) {
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
                 .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
-        List<UUID> notFoundProducts = productIds.stream()
-                .filter(id -> !cart.getProducts().containsKey(id))
-                .toList();
-        if (!notFoundProducts.isEmpty()) {
-            throw new NoProductsInShoppingCartException("Products " + notFoundProducts + " not found in cart");
+        if(cart.getProducts().isEmpty()) {
+            throw new NoProductsInShoppingCartException("No items in shopping cart found");
         }
-
         productIds.forEach((id) -> cart.getProducts().remove(id));
         return mapper.toDto(repository.save(cart));
     }
@@ -85,10 +78,17 @@ public class ShoppingCartService {
     public ShoppingCartDto changeProductQuantityInShoppingCart(String username, ChangeProductQuantityRequest productQuantity) {
         ShoppingCart cart = repository.findByUsernameAndActiveTrue(username)
                 .orElseThrow(() -> new NotAuthorizedUserException("User " + username + " not found"));
-        if (!cart.getProducts().containsKey(productQuantity.getProductId())) {
-            throw new NoProductsInShoppingCartException("Product " + productQuantity.getProductId() + " not found in cart");
+        UUID productId = productQuantity.getProductId();
+        if (!cart.getProducts().containsKey(productId)) {
+            throw new NoProductsInShoppingCartException("Product " + productId + " not found in cart");
         }
-        cart.getProducts().put(productQuantity.getProductId(), productQuantity.getNewQuantity());
+        cart.getProducts().put(productId, productQuantity.getNewQuantity());
+        validateCartAgainstWarehouse(cart);
         return mapper.toDto(repository.save(cart));
+    }
+
+    private void validateCartAgainstWarehouse(ShoppingCart cart) {
+        ShoppingCartDto cartDto = mapper.toDto(cart);
+        warehouseClient.checkBookedProducts(cartDto);
     }
 }
