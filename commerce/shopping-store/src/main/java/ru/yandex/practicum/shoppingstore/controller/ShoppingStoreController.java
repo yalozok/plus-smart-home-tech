@@ -67,7 +67,7 @@ public class ShoppingStoreController implements ShoppingStoreOperation {
     @PostMapping("/removeProductFromStore")
     @Loggable
     public boolean deleteProduct(@RequestBody UUID productId) throws ProductNotFoundException {
-        return service.deleteProduct(productId);
+        return service.deactivateProduct(productId);
     }
 
     @Override

@@ -41,12 +41,12 @@ public class ShoppingStoreService {
     }
 
     @Transactional
-    public boolean deleteProduct(UUID productId) {
+    public boolean deactivateProduct(UUID productId) {
         Product product = repository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("Product " + productId + " not found"));
         product.setProductState(ProductState.DEACTIVATE);
-        Product savedProduct = repository.save(product);
-        return savedProduct.getProductState() == ProductState.DEACTIVATE;
+        repository.save(product);
+        return true;
     }
 
     @Transactional
