@@ -36,8 +36,11 @@ public class ShoppingStoreService {
 
     @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
-        Product product = mapper.toEntity(productDto);
-        return mapper.toDto(repository.save(product));
+        UUID productId = productDto.getProductId();
+        Product existingProduct = repository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("Product " + productId + " not found"));
+        mapper.updateEntityFromDto(productDto, existingProduct);
+        return mapper.toDto(repository.save(existingProduct));
     }
 
     @Transactional
