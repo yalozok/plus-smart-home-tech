@@ -53,6 +53,7 @@ public class WarehouseService {
                 .orElseThrow(() -> new NoSpecifiedProductInWarehouseException("Product " + request.getProductId() + " not found in warehouse"));
         long newQuantity = product.getQuantity() + request.getQuantity();
         product.setQuantity(newQuantity);
+        warehouseProductRepository.save(product);
     }
 
     public AddressDto getAddress() {
