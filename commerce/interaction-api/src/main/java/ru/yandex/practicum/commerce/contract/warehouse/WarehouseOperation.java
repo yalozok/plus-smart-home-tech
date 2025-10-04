@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.SpecifiedProductAlreadyInWarehouseException;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.commerce.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.request.warehouse.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.request.warehouse.NewProductInWarehouseRequest;
 
+@RequestMapping("/api/v1/warehouse")
 public interface WarehouseOperation {
     @PutMapping
     void setProductToWarehouse(@RequestBody @Valid @NotNull NewProductInWarehouseRequest request)

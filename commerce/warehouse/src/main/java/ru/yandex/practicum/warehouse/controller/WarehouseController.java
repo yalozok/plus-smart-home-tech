@@ -24,14 +24,12 @@ import ru.yandex.practicum.logging.Loggable;
 import ru.yandex.practicum.warehouse.service.WarehouseService;
 
 @RestController
-@RequestMapping("/api/v1/warehouse")
 @RequiredArgsConstructor
 public class WarehouseController implements WarehouseOperation {
     private final WarehouseService service;
 
     @Override
     @Loggable
-    @PutMapping
     public void setProductToWarehouse(@RequestBody @Valid @NotNull NewProductInWarehouseRequest request)
             throws SpecifiedProductAlreadyInWarehouseException {
         service.setProductToWarehouse(request);
@@ -39,7 +37,6 @@ public class WarehouseController implements WarehouseOperation {
 
     @Override
     @Loggable
-    @PostMapping("/check")
     public BookedProductsDto checkBookedProducts(@RequestBody @Valid @NotNull ShoppingCartDto cart)
             throws ProductInShoppingCartLowQuantityInWarehouse {
         return service.checkedBookedProducts(cart);
@@ -47,7 +44,6 @@ public class WarehouseController implements WarehouseOperation {
 
     @Override
     @Loggable
-    @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public void addProductToWarehouse(@RequestBody @Valid @NotNull AddProductToWarehouseRequest request)
             throws NoSpecifiedProductInWarehouseException {
@@ -56,7 +52,6 @@ public class WarehouseController implements WarehouseOperation {
 
     @Override
     @Loggable
-    @GetMapping("/address")
     public AddressDto getAddress() {
         return service.getAddress();
     }
