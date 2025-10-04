@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import ru.yandex.practicum.commerce.dto.shopping.store.PageableDto;
+import ru.yandex.practicum.commerce.dto.PageableDto;
 
 @Mapper(componentModel = "spring", imports = {Sort.class, PageRequest.class})
 public interface PageableMapper {

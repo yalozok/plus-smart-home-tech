@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.contract.shopping.store.ShoppingStoreOperation;
 import ru.yandex.practicum.commerce.contract.shopping.store.exception.ProductNotFoundException;
-import ru.yandex.practicum.commerce.dto.shopping.store.PageableDto;
+import ru.yandex.practicum.commerce.dto.PageableDto;
 import ru.yandex.practicum.commerce.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.commerce.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.commerce.dto.shopping.store.QuantityState;
