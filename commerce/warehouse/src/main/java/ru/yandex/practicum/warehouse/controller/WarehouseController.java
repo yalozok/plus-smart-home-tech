@@ -2,26 +2,28 @@ package ru.yandex.practicum.warehouse.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.contract.warehouse.WarehouseOperation;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.SpecifiedProductAlreadyInWarehouseException;
-import ru.yandex.practicum.commerce.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.AddressDto;
+import ru.yandex.practicum.commerce.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.request.warehouse.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.request.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.ShippedToDeliveryRequest;
 import ru.yandex.practicum.logging.Loggable;
 import ru.yandex.practicum.warehouse.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,5 +56,23 @@ public class WarehouseController implements WarehouseOperation {
     @Loggable
     public AddressDto getAddress() {
         return service.getAddress();
+    }
+
+    @Override
+    @Loggable
+    public void shipOrder(@RequestBody @NotNull @Valid ShippedToDeliveryRequest shipRequest) {
+
+    }
+
+    @Override
+    @Loggable
+    public void returnProductsToWarehouse(@RequestBody @Valid @NotNull Map<@NotNull UUID, @NotNull @Positive Long> products) {
+
+    }
+
+    @Override
+    @Loggable
+    public BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid @NotNull AssemblyProductsForOrderRequest request) {
+        return new BookedProductsDto();
     }
 }

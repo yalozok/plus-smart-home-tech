@@ -2,19 +2,27 @@ package ru.yandex.practicum.commerce.contract.warehouse;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.yandex.practicum.commerce.contract.delivery.exception.NoDeliveryFoundException;
+import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.SpecifiedProductAlreadyInWarehouseException;
-import ru.yandex.practicum.commerce.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.AddressDto;
+import ru.yandex.practicum.commerce.dto.shopping.cart.ShoppingCartDto;
 import ru.yandex.practicum.commerce.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.request.warehouse.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.request.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.request.warehouse.ShippedToDeliveryRequest;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RequestMapping("/api/v1/warehouse")
 public interface WarehouseOperation {
@@ -32,4 +40,15 @@ public interface WarehouseOperation {
 
     @GetMapping("/address")
     AddressDto getAddress();
+
+    @PostMapping("/shipped")
+    void shipOrder(@RequestBody @NotNull @Valid ShippedToDeliveryRequest shipRequest)
+            throws NoOrderFoundException, NoDeliveryFoundException;
+
+    @PostMapping("/return")
+    void returnProductsToWarehouse(@RequestBody @Valid @NotNull Map<@NotNull UUID, @NotNull @Positive Long> products);
+
+    @PostMapping("/assembly")
+    BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid @NotNull AssemblyProductsForOrderRequest request)
+            throws NoOrderFoundException;
 }
