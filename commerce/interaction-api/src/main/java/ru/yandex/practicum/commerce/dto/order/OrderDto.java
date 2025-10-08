@@ -20,10 +20,15 @@ public class OrderDto {
     private UUID paymentId;
     private UUID deliveryId;
     private OrderState state;
+    @Positive
     private double deliveryWeight;
+    @Positive
     private double deliveryVolume;
     private boolean fragile;
+    @Positive
     private BigDecimal totalPrice;
+    @Positive
     private BigDecimal deliveryPrice;
+    @Positive
     private BigDecimal productPrice;
 }

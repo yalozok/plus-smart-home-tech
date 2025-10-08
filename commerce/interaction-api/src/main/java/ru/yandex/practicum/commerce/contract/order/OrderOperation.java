@@ -37,19 +37,27 @@ public interface OrderOperation {
             throws NoOrderFoundException;
 
     @PostMapping("/payment")
-    OrderDto payForOrder(@RequestParam @NotNull UUID orderId)
+    OrderDto initiatePayment(@RequestParam @NotNull UUID orderId)
+            throws NoOrderFoundException;
+
+    @PostMapping("/payment/success")
+    OrderDto paymentSuccess(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/payment/failed")
-    OrderDto payForOrderFailed(@RequestParam @NotNull UUID orderId)
+    OrderDto paymentFailed(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/delivery")
-    OrderDto deliverOrder(@RequestParam @NotNull UUID orderId)
+    OrderDto initiateDelivery(@RequestParam @NotNull UUID orderId)
+            throws NoOrderFoundException;
+
+    @PostMapping("/delivery/success")
+    OrderDto deliverSuccess(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/delivery/failed")
-    OrderDto deliverOrderFailed(@RequestParam @NotNull UUID orderId)
+    OrderDto deliverFailed(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/completed")
