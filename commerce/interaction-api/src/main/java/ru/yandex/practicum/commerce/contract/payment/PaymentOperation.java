@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
+import ru.yandex.practicum.commerce.contract.payment.exception.NoPaymentFoundException;
 import ru.yandex.practicum.commerce.contract.payment.exception.NotEnoughInfoInOrderToCalculateException;
 import ru.yandex.practicum.commerce.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.dto.payment.PaymentDto;
@@ -17,24 +17,24 @@ import java.util.UUID;
 
 @RequestMapping("/api/v1/payment")
 public interface PaymentOperation {
-    @PostMapping
-    PaymentDto calculatePayment(@RequestBody @NotNull @Valid OrderDto orderDto)
+    @PostMapping("/productCost")
+    BigDecimal getProductCost(@RequestBody @NotNull @Valid OrderDto orderDto)
             throws NotEnoughInfoInOrderToCalculateException;
 
     @PostMapping("/totalCost")
-    BigDecimal calculateTotalCost(@RequestBody @NotNull @Valid OrderDto orderDto)
+    BigDecimal getTotalCost(@RequestBody @NotNull @Valid OrderDto orderDto)
+            throws NotEnoughInfoInOrderToCalculateException;
+
+    @PostMapping
+    PaymentDto setPayment(@RequestBody @NotNull @Valid OrderDto orderDto)
             throws NotEnoughInfoInOrderToCalculateException;
 
     @PostMapping("/refund")
-    void confirmPayment(@RequestParam @NotBlank UUID paymentId)
-            throws NoOrderFoundException;
-
-    @PostMapping("/productCost")
-    BigDecimal calculateProductCost(@RequestBody @NotNull @Valid OrderDto orderDto)
-            throws NotEnoughInfoInOrderToCalculateException;
+    void paymentSuccess(@RequestParam @NotBlank UUID paymentId)
+            throws NoPaymentFoundException;
 
     @PostMapping("/failed")
-    BigDecimal failPayment(@RequestParam @NotBlank UUID paymentId)
-            throws NoOrderFoundException;
+    void paymentFailed(@RequestParam @NotBlank UUID paymentId)
+            throws NoPaymentFoundException;
 
 }
