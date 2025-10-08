@@ -15,6 +15,8 @@ import ru.yandex.practicum.commerce.dto.shopping.store.ProductCategory;
 import ru.yandex.practicum.commerce.dto.shopping.store.ProductDto;
 import ru.yandex.practicum.commerce.dto.shopping.store.QuantityState;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequestMapping("/api/v1/shopping-store")
@@ -22,8 +24,8 @@ public interface ShoppingStoreOperation {
     @GetMapping
     Page<ProductDto> getProducts(
             @RequestParam @NotNull ProductCategory category,
-            @RequestParam(required = false) int page,
-            @RequestParam(required = false) int size,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false) String[] sort
     );
 
@@ -43,4 +45,7 @@ public interface ShoppingStoreOperation {
 
     @GetMapping("/{productId}")
     ProductDto getProduct(@PathVariable @NotNull UUID productId) throws ProductNotFoundException;
+
+    @GetMapping
+    List<ProductDto> getProductsByIds(@RequestParam @NotNull Set<UUID> productIds) throws ProductNotFoundException;
 }
