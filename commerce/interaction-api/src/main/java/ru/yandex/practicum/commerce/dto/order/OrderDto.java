@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.dto.order;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -11,7 +12,10 @@ import java.util.UUID;
 @Data
 public class OrderDto {
     private UUID orderId;
+    @NotBlank
+    String username;
 
+    @NotNull
     private UUID shoppingCartId;
 
     @NotNull
@@ -19,7 +23,7 @@ public class OrderDto {
 
     private UUID paymentId;
     private UUID deliveryId;
-    private OrderState state;
+    private OrderState orderState;
     @Positive
     private double deliveryWeight;
     @Positive
