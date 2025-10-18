@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.commerce.contract.payment.exception.NoPaymentFoundException;
 import ru.yandex.practicum.commerce.contract.payment.exception.NotEnoughInfoInOrderToCalculateException;
@@ -15,7 +14,6 @@ import ru.yandex.practicum.commerce.dto.payment.PaymentDto;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@RequestMapping("/api/v1/payment")
 public interface PaymentOperation {
     @PostMapping("/productCost")
     BigDecimal getProductCost(@RequestBody @NotNull @Valid OrderDto orderDto)

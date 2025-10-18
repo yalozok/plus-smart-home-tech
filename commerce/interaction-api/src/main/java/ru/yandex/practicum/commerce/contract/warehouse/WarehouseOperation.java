@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ru.yandex.practicum.commerce.contract.delivery.exception.NoDeliveryFoundException;
 import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.NoSpecifiedProductInWarehouseException;
@@ -24,7 +23,6 @@ import ru.yandex.practicum.commerce.request.warehouse.ShippedToDeliveryRequest;
 import java.util.Map;
 import java.util.UUID;
 
-@RequestMapping("/api/v1/warehouse")
 public interface WarehouseOperation {
     @PutMapping
     void setProductToWarehouse(@RequestBody @Valid @NotNull NewProductInWarehouseRequest request)
@@ -42,7 +40,7 @@ public interface WarehouseOperation {
     AddressDto getAddress();
 
     @PostMapping("/shipped")
-    void shipOrder(@RequestBody @NotNull @Valid ShippedToDeliveryRequest shipRequest)
+    void shippedToDelivery(@RequestBody @NotNull @Valid ShippedToDeliveryRequest shipRequest)
             throws NoOrderFoundException, NoDeliveryFoundException;
 
     @PostMapping("/return")

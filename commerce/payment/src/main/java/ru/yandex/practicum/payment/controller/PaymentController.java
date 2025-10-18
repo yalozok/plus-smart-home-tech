@@ -1,9 +1,10 @@
 package ru.yandex.practicum.payment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.contract.payment.PaymentOperation;
+import ru.yandex.practicum.commerce.contract.payment.exception.NoPaymentFoundException;
 import ru.yandex.practicum.commerce.contract.payment.exception.NotEnoughInfoInOrderToCalculateException;
 import ru.yandex.practicum.commerce.dto.order.OrderDto;
 import ru.yandex.practicum.commerce.dto.payment.PaymentDto;
@@ -15,8 +16,10 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/payment")
 public class PaymentController implements PaymentOperation {
     private final PaymentService service;
+
     @Override
     @Loggable
     public BigDecimal getProductCost(OrderDto orderDto) throws NotEnoughInfoInOrderToCalculateException {
@@ -37,13 +40,13 @@ public class PaymentController implements PaymentOperation {
 
     @Override
     @Loggable
-    public void paymentSuccess(UUID paymentId) throws NoOrderFoundException {
+    public void paymentSuccess(UUID paymentId) throws NoPaymentFoundException {
         service.paymentSuccess(paymentId);
     }
 
     @Override
     @Loggable
-    public void paymentFailed(UUID paymentId) throws NoOrderFoundException {
+    public void paymentFailed(UUID paymentId) throws NoPaymentFoundException {
         service.paymentFailed(paymentId);
     }
 }

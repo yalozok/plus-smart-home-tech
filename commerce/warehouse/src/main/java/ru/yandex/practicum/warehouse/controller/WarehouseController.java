@@ -2,13 +2,14 @@ package ru.yandex.practicum.warehouse.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.contract.warehouse.WarehouseOperation;
+import ru.yandex.practicum.commerce.contract.warehouse.exception.NoShipmentInWarehouseFoundException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.commerce.contract.warehouse.exception.SpecifiedProductAlreadyInWarehouseException;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/warehouse")
 public class WarehouseController implements WarehouseOperation {
     private final WarehouseService service;
 
@@ -40,14 +42,14 @@ public class WarehouseController implements WarehouseOperation {
     @Override
     @Loggable
     public BookedProductsDto checkBookedProducts(@RequestBody @Valid @NotNull ShoppingCartDto cart)
-            throws ProductInShoppingCartLowQuantityInWarehouse {
+            throws ProductInShoppingCartLowQuantityInWarehouse, NoSpecifiedProductInWarehouseException {
         return service.checkedBookedProducts(cart);
     }
 
     @Override
     @Loggable
     @ResponseStatus(HttpStatus.CREATED)
-    public void addProductToWarehouse(@RequestBody @Valid @NotNull AddProductToWarehouseRequest request)
+    public void addProductToWarehouse(AddProductToWarehouseRequest request)
             throws NoSpecifiedProductInWarehouseException {
         service.addProductToWarehouse(request);
     }
@@ -60,19 +62,22 @@ public class WarehouseController implements WarehouseOperation {
 
     @Override
     @Loggable
-    public void shipOrder(@RequestBody @NotNull @Valid ShippedToDeliveryRequest shipRequest) {
-
+    public void shippedToDelivery(ShippedToDeliveryRequest shipRequest)
+            throws NoShipmentInWarehouseFoundException {
+        service.shippedToDelivery(shipRequest);
     }
 
     @Override
     @Loggable
-    public void returnProductsToWarehouse(@RequestBody @Valid @NotNull Map<@NotNull UUID, @NotNull @Positive Long> products) {
-
+    public void returnProductsToWarehouse(Map<UUID, Long> products)
+            throws NoSpecifiedProductInWarehouseException {
+        service.returnProductsToWarehouse(products);
     }
 
     @Override
     @Loggable
-    public BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid @NotNull AssemblyProductsForOrderRequest request) {
-        return new BookedProductsDto();
+    public BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request)
+            throws NoSpecifiedProductInWarehouseException, ProductInShoppingCartLowQuantityInWarehouse {
+        return service.assemblyProductsForOrder(request);
     }
 }
