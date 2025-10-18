@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.request.order;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.yandex.practicum.commerce.dto.AddressDto;
@@ -12,4 +13,7 @@ public class CreateNewOrderRequest {
 
     @NotNull
     private AddressDto deliveryAddress;
+
+    @NotBlank
+    private String username;
 }
