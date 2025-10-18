@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
+import ru.yandex.practicum.commerce.dto.payment.PaymentState;
 
 import java.math.BigDecimal;
 import java.util.UUID;
