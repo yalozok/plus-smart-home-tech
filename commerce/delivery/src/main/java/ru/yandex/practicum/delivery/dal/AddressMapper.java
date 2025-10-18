@@ -1,7 +1,6 @@
 package ru.yandex.practicum.delivery.dal;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import ru.yandex.practicum.commerce.dto.AddressDto;
 
 @Mapper(componentModel = "spring",
