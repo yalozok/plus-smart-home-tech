@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.commerce.contract.shopping.store.exception.ProductNotFoundException;
 import ru.yandex.practicum.commerce.dto.shopping.store.ProductCategory;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@RequestMapping("/api/v1/shopping-store")
 public interface ShoppingStoreOperation {
     @GetMapping
     Page<ProductDto> getProducts(
@@ -46,6 +44,6 @@ public interface ShoppingStoreOperation {
     @GetMapping("/{productId}")
     ProductDto getProduct(@PathVariable @NotNull UUID productId) throws ProductNotFoundException;
 
-    @GetMapping
+    @GetMapping("/set")
     List<ProductDto> getProductsByIds(@RequestParam @NotNull Set<UUID> productIds) throws ProductNotFoundException;
 }

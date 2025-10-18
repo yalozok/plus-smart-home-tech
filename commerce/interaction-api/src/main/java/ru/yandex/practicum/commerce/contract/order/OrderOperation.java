@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
 import ru.yandex.practicum.commerce.contract.shopping.cart.exception.NotAuthorizedUserException;
@@ -19,7 +18,6 @@ import ru.yandex.practicum.commerce.request.order.ProductReturnRequest;
 
 import java.util.UUID;
 
-@RequestMapping("/api/v1/order")
 public interface OrderOperation {
     @GetMapping
     Page<OrderDto> getOrdersByUser(@RequestParam @NotBlank String username,
@@ -49,35 +47,35 @@ public interface OrderOperation {
             throws NoOrderFoundException;
 
     @PostMapping("/delivery")
-    OrderDto initiateDelivery(@RequestParam @NotNull UUID orderId)
+    OrderDto deliveryInProcess(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/delivery/success")
-    OrderDto deliverSuccess(@RequestParam @NotNull UUID orderId)
+    OrderDto deliverySuccess(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/delivery/failed")
-    OrderDto deliverFailed(@RequestParam @NotNull UUID orderId)
+    OrderDto deliveryFailed(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/completed")
     OrderDto completeOrder(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
-    @PostMapping("calculate/total")
+    @PostMapping("/calculate/total")
     OrderDto calculateOrderTotal(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
-    @PostMapping("calculate/delivery")
+    @PostMapping("/calculate/delivery")
     OrderDto calculateOrderDelivery(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
-    @PostMapping("assembly")
-    OrderDto assemblyOrder(@RequestParam @NotNull UUID orderId)
+    @PostMapping("/assembly")
+    OrderDto assembly(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
     @PostMapping("/assembly/failed")
-    OrderDto assemblyOrderFailed(@RequestParam @NotNull UUID orderId)
+    OrderDto assemblyFailed(@RequestParam @NotNull UUID orderId)
             throws NoOrderFoundException;
 
 }
