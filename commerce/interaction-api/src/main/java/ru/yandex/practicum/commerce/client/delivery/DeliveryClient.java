@@ -5,6 +5,6 @@ import ru.yandex.practicum.commerce.contract.delivery.DeliveryOperation;
 
 @FeignClient(name = "delivery",
         path = "/api/v1/delivery",
-        configuration = FeignClient.class)
+        configuration = FeignConfig.class)
 public interface DeliveryClient extends DeliveryOperation {
 }
