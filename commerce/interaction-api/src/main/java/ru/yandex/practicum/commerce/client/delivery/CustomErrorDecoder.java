@@ -14,7 +14,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
         String message = extractMessage(response);
-        if (response.status() == 404) {
+        if (response.status() == 400) {
             return new NoDeliveryFoundException(message);
         }
         return defaultErrorDecoder.decode(methodKey, response);

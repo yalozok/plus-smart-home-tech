@@ -3,7 +3,7 @@ package ru.yandex.practicum.commerce.client.payment;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import org.apache.commons.io.IOUtils;
-import ru.yandex.practicum.commerce.contract.order.exception.NoOrderFoundException;
+import ru.yandex.practicum.commerce.contract.payment.exception.NoPaymentFoundException;
 import ru.yandex.practicum.commerce.contract.payment.exception.NotEnoughInfoInOrderToCalculateException;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         if (response.status() == 400) {
             return new NotEnoughInfoInOrderToCalculateException(message);
         } else if (response.status() == 404) {
-            return new NoOrderFoundException(message);
+            return new NoPaymentFoundException(message);
         }
         return defaultErrorDecoder.decode(methodKey, response);
     }
