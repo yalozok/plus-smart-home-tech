@@ -11,10 +11,10 @@ public class DeliveryDto {
     private UUID deliveryId;
 
     @NotNull
-    private AddressDto fromAddress;
+    private AddressDto from;
 
     @NotNull
-    private AddressDto toAddress;
+    private AddressDto to;
 
     @NotNull
     private UUID orderId;
