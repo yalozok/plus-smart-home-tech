@@ -78,3 +78,21 @@ services:
       POSTGRES_PASSWORD: payment
     ports:
       - "5436:5432"
+
+  delivery-db:
+    image: postgres:16.1
+    environment:
+      POSTGRES_DB: delivery
+      POSTGRES_USER: delivery
+      POSTGRES_PASSWORD: delivery
+    ports:
+      - "5437:5432"
+
+  order-db:
+    image: postgres:16.1
+    environment:
+      POSTGRES_DB: order
+      POSTGRES_USER: order
+      POSTGRES_PASSWORD: order
+    ports:
+      - "5438:5432"
