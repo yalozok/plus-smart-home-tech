@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS shopping_cart_item(
     CONSTRAINT fk_shopping_cart_id
         FOREIGN KEY (shopping_cart_id)
         REFERENCES shopping_cart(id) ON DELETE CASCADE
-)
+);
