@@ -30,6 +30,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private static final BigDecimal TEN_PERCENT = new BigDecimal("0.10");
+    private static final BigDecimal ONE_PLUS_TEN_PERCENT = new BigDecimal("1.10");
 
     public BigDecimal getProductCost(OrderDto orderDto) {
         Map<UUID, Long> productsFromOrder = orderDto.getProducts();
@@ -54,7 +55,7 @@ public class PaymentService {
         if (orderDto.getProductPrice() == null) {
             throw new NotEnoughInfoInOrderToCalculateException("Product price not found");
         }
-        BigDecimal productCost = orderDto.getProductPrice().multiply(TEN_PERCENT);
+        BigDecimal productCost = orderDto.getProductPrice().multiply(ONE_PLUS_TEN_PERCENT);
         BigDecimal deliveryCost = orderDto.getDeliveryPrice();
         return productCost.add(deliveryCost);
     }
@@ -75,10 +76,8 @@ public class PaymentService {
         payment.setTotalPayment(orderDto.getTotalPrice());
         payment.setDeliveryTotal(orderDto.getDeliveryPrice());
         payment.setProductTotal(orderDto.getProductPrice());
-        payment.setFeeTotal(orderDto.getProductPrice().multiply(TEN_PERCENT)
-                .subtract(orderDto.getDeliveryPrice()));
+        payment.setFeeTotal(orderDto.getProductPrice().multiply(TEN_PERCENT));
         payment.setPaymentState(PaymentState.PENDING);
-        orderClient.initiatePayment(orderDto.getOrderId());
         return paymentMapper.toDto(paymentRepository.saveAndFlush(payment));
     }
 
