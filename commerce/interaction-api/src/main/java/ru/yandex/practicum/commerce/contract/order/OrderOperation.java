@@ -20,7 +20,8 @@ import java.util.UUID;
 
 public interface OrderOperation {
     @GetMapping
-    Page<OrderDto> getOrdersByUser(@RequestParam @NotBlank String username,
+    Page<OrderDto> getOrdersByUser(@RequestParam
+                                   @NotBlank(message = "Username is required") String username,
                                    @RequestParam(required = false) int page,
                                    @RequestParam(required = false) int size,
                                    @RequestParam(required = false) String[] sort)

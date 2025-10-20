@@ -39,9 +39,6 @@ public class OrderService {
 
     public Page<OrderDto> getOrdersByUser(String username, Pageable pageable) {
         Page<Order> orders = orderRepository.findByUsername(username, pageable);
-        if (orders.isEmpty()) {
-            throw new NoOrderFoundException("No orders found for user " + username);
-        }
         return orders.map(orderMapper::toDto);
     }
 
@@ -122,6 +119,7 @@ public class OrderService {
 
         BigDecimal totalCost = paymentClient.getTotalCost(orderMapper.toDto(order));
         order.setTotalPrice(totalCost);
+        orderRepository.saveAndFlush(order);
         return orderMapper.toDto(order);
     }
 
