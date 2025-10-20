@@ -75,17 +75,12 @@ public class DeliveryService {
     public BigDecimal calculateDeliveryCost(OrderDto orderDto) {
         Delivery delivery = deliveryRepository.findById(orderDto.getDeliveryId()).
                 orElseThrow(() -> new NoDeliveryFoundException("Delivery " + orderDto.getDeliveryId() + " not found"));
-        delivery.setTotalWeight(orderDto.getDeliveryWeight());
-        delivery.setTotalVolume(orderDto.getDeliveryVolume());
-        delivery.setFragile(orderDto.isFragile());
-        deliveryRepository.saveAndFlush(delivery);
-
         Address from = delivery.getFrom();
         Address to = delivery.getTo();
 
         BigDecimal totalCost = BASE_DELIVERY_COST;
 
-        BigDecimal warehouseRemotenessFactor = from.getCountry().equals("ADDRESS_2") ?
+        BigDecimal warehouseRemotenessFactor = from.getStreet().equals("ADDRESS_2") ?
                 totalCost.multiply(BigDecimal.valueOf(2)) : totalCost;
         totalCost = totalCost.add(warehouseRemotenessFactor);
 
