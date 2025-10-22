@@ -30,6 +30,8 @@ public class DeliveryService {
     private final WareHouseClient warehouseClient;
 
     private final BigDecimal BASE_DELIVERY_COST = BigDecimal.valueOf(5);
+    private final BigDecimal ADDRESS1_DELIVERY_FACTOR = BigDecimal.valueOf(1);
+    private final BigDecimal ADDRESS2_DELIVERY_FACTOR = BigDecimal.valueOf(2);
 
     @Transactional
     public DeliveryDto createDelivery(DeliveryDto deliveryDto) {
@@ -80,8 +82,11 @@ public class DeliveryService {
 
         BigDecimal totalCost = BASE_DELIVERY_COST;
 
-        BigDecimal warehouseRemotenessFactor = from.getStreet().equals("ADDRESS_2") ?
-                totalCost.multiply(BigDecimal.valueOf(2)) : totalCost;
+        BigDecimal warehouseRemotenessFactor = switch (from.getStreet()) {
+            case "ADDRESS_2" -> totalCost.multiply(ADDRESS2_DELIVERY_FACTOR);
+            case "ADDRESS_1" -> totalCost.multiply(ADDRESS1_DELIVERY_FACTOR);
+            default -> totalCost;
+        };
         totalCost = totalCost.add(warehouseRemotenessFactor);
 
         if (orderDto.isFragile()) {
