@@ -14,6 +14,8 @@ import ru.yandex.practicum.shoppingstore.dal.Product;
 import ru.yandex.practicum.shoppingstore.dal.ProductMapper;
 import ru.yandex.practicum.shoppingstore.dal.ShoppingStoreRepository;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -68,6 +70,16 @@ public class ShoppingStoreService {
         return mapper.toDto(repository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("Product " + productId + " not found")
         ));
+    }
+
+    public List<ProductDto> getProductsByIds(Set<UUID> productIds) {
+        List<Product> products = repository.findAllById(productIds);
+        if(products.size() != productIds.size()) {
+            products.forEach(product -> productIds.remove(product.getProductId()));
+            throw new ProductNotFoundException("Products not found: " + productIds);
+        }
+
+        return products.stream().map(mapper::toDto).toList();
     }
 
 }

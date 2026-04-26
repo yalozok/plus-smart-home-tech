@@ -26,7 +26,6 @@ public class ShoppingCartService {
     private final ShoppingCartMapper mapper;
     private final WareHouseClient warehouseClient;
 
-
     public ShoppingCartDto getOrCreateShoppingCart(String username) {
         ShoppingCart cart = findShoppingCartByUseOrCreateNewOne(username);
         return mapper.toDto(cart);

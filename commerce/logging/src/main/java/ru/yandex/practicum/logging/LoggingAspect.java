@@ -23,5 +23,4 @@ public class LoggingAspect {
         logger.info("<==: {} - Response: {}", joinPoint.getSignature(), result);
         return result;
     }
-
 }

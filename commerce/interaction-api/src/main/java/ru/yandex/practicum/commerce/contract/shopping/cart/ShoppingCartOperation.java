@@ -30,7 +30,7 @@ public interface ShoppingCartOperation {
     ) throws NotAuthorizedUserException;
 
     @DeleteMapping
-    void deleteShoppingCart(@RequestParam @NotEmpty String username) throws NotAuthorizedUserException;
+    void deactivateShoppingCart(@RequestParam @NotEmpty String username) throws NotAuthorizedUserException;
 
     @PostMapping("/remove")
     ShoppingCartDto removeProductFromShoppingCart(

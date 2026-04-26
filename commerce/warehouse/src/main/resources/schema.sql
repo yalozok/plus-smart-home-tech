@@ -8,3 +8,19 @@ CREATE TABLE IF NOT EXISTS warehouse_products(
     quantity BIGINT NOT NULL DEFAULT 0,
     CONSTRAINT unique_product UNIQUE (product_id)
 );
+
+CREATE TABLE IF NOT EXISTS warehouse_shipments(
+    shipment_id uuid DEFAULT gen_random_uuid() PRIMARY KEY NOT NULL,
+    order_id uuid NOT NULL,
+    delivery_id uuid
+);
+
+CREATE TABLE IF NOT EXISTS warehouse_shipment_items(
+    shipment_id uuid NOT NULL,
+    product_id uuid NOT NULL,
+    quantity INT NOT NULL CHECK ( quantity > 0 ),
+    PRIMARY KEY (shipment_id, product_id),
+    constraint fk_shipment_id
+       FOREIGN KEY (shipment_id)
+       REFERENCES warehouse_shipments(shipment_id) ON DELETE CASCADE
+);
